@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -705,7 +705,7 @@
             <input id="supabaseUrl" value="">
           </label>
           <label>Supabase Anon Key
-            <input id="supabaseAnonKey" type="password" placeholder="not used in static mode">
+            <input id="supabaseAnonKey" type="password" placeholder="Supabase anon / publishable key">
           </label>
           <label>AI Provider
             <select id="aiProvider">
@@ -838,11 +838,9 @@
     window.initialProvider = "static";
     window.initialOpenAIModel = "browser-demo";
     window.adminEmail = "admin@example.com";
-    window.supabaseConfig = {
-      url: "",
-      anonKey: ""
-    };
+    window.supabaseConfig = JSON.parse(localStorage.getItem("socialPilotStatic:supabaseConfig") || '{"url":"","anonKey":""}');
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
 
   <button id="floatAssistantButton" class="float-button" onclick="toggleFloatingAssistant()" aria-label="Open AI assistant">
