@@ -1782,9 +1782,23 @@ async function saveSettings() {
     const value = document.getElementById(id).value.trim();
     if (value) payload[key] = value;
   }
+  const supabaseUrl = document.getElementById("supabaseUrl").value.trim();
+  const supabaseAnonKey = document.getElementById("supabaseAnonKey").value.trim();
+  if (supabaseUrl || supabaseAnonKey) {
+    const nextConfig = {
+      url: supabaseUrl || window.supabaseConfig?.url || "",
+      anonKey: supabaseAnonKey || window.supabaseConfig?.anonKey || "",
+    };
+    localStorage.setItem(`${STATIC_PREFIX}supabaseConfig`, JSON.stringify(nextConfig));
+    window.supabaseConfig = nextConfig;
+    supabaseClient = null;
+  }
   try {
     const data = await api("/api/settings", payload);
-    text("settingsOutput", data.message);
+    const modeNote = window.supabaseConfig?.url && window.supabaseConfig?.anonKey
+      ? " Supabase Auth is active for email, Google, and enabled OAuth providers."
+      : " Add Supabase URL and anon key to activate real auth.";
+    text("settingsOutput", `${data.message}${modeNote}`);
     showToast("Settings saved.", "success");
   } catch (error) {
     text("settingsOutput", error.message);
@@ -1806,8 +1820,10 @@ function refreshAll() {
   loadBrandKit();
 }
 
-document.getElementById("aiProvider").value = window.initialProvider || "gemini";
-document.getElementById("openaiModel").value = window.initialOpenAIModel || "gpt-4.1-mini";
+const savedSupabaseConfig = window.supabaseConfig || {};
+if (document.getElementById("supabaseUrl")) document.getElementById("supabaseUrl").value = savedSupabaseConfig.url || "";
+if (document.getElementById("aiProvider")) document.getElementById("aiProvider").value = window.initialProvider || "gemini";
+if (document.getElementById("openaiModel")) document.getElementById("openaiModel").value = window.initialOpenAIModel || "gpt-4.1-mini";
 setLanguage(currentLanguage);
 checkLogin();
 refreshAll();
